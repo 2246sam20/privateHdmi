@@ -1,5 +1,6 @@
 package com.example.hdmicecdemoapp
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,26 +24,27 @@ import com.example.hdmicectestapp.ui.theme.HDMICECTESTAPPTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val hdmiHelper  = HdmiHelper(this@MainActivity)
+
         setContent {
             HDMICECTESTAPPTheme {
-                MainScreen()
+                MainScreen(hdmiHelper, this@MainActivity)
             }
         }
-
-        val hmdiHelper : HdmiHelper = HdmiHelper(this@MainActivity)
-
-
     }
 }
+
 @Composable
-fun MainScreen(){
+fun MainScreen( hdmiHelper : HdmiHelper, context: Context){
     Scaffold(topBar = { AppBar() }) {
         Surface(
             modifier = Modifier.fillMaxSize(),
         ) {
             Column {
                 Volume_UP()
-                Volume_MUTE()
+                POWER_OFF(hdmiHelper, context )
+                POWER_ON(hdmiHelper, context)
                 Volume_DOWN()
 
             }
@@ -81,9 +83,9 @@ fun Volume_UP() {
 }
 
 @Composable
-fun Volume_MUTE() {
+fun POWER_OFF(hdmiHelper : HdmiHelper, context: Context) {
     Button(
-        onClick = { /* ... */ },
+        onClick = { hdmiHelper.PowerOFFTargetTv(context) },
         modifier = Modifier.padding(top = 40.dp, bottom = 20.dp, start = 135.dp, end = 16.dp),
         contentPadding = PaddingValues(
             start = 10.dp,
@@ -91,18 +93,40 @@ fun Volume_MUTE() {
             end = 40.dp,
             bottom = 12.dp
         ),
-        colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray),
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
     ) {
         Icon(
             Icons.Filled.AccountBox,
-            contentDescription = "MUTE",
+            contentDescription = "Power OFF",
             modifier = Modifier.size(ButtonDefaults.IconSize)
         )
         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-        Text("MUTE")
+        Text("Power OFF")
     }
 }
 
+@Composable
+fun POWER_ON(hdmiHelper : HdmiHelper, context: Context) {
+    Button(
+        onClick = {  hdmiHelper.PowerONTargetTv(context)},
+        modifier = Modifier.padding(top = 40.dp, bottom = 20.dp, start = 135.dp, end = 16.dp),
+        contentPadding = PaddingValues(
+            start = 10.dp,
+            top = 12.dp,
+            end = 40.dp,
+            bottom = 12.dp
+        ),
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Green),
+    ) {
+        Icon(
+            Icons.Filled.AccountBox,
+            contentDescription = "Power ON",
+            modifier = Modifier.size(ButtonDefaults.IconSize)
+        )
+        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+        Text("Power ON")
+    }
+}
 @Composable
 fun Volume_DOWN(){
     Card(
@@ -122,6 +146,6 @@ fun Volume_DOWN(){
 @Composable
 fun DefaultPreview() {
     HDMICECTESTAPPTheme() {
-        MainScreen()
+//        MainScreen()
     }
 }
